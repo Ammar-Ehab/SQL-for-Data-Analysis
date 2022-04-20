@@ -1,0 +1,73 @@
+QUERY_1
+
+select e.EmployeeId, e.FirstName, e.LastName, count(*) Number_of_invoices
+from Employee e
+join Customer c
+on e.EmployeeId=c.SupportRepId
+join invoice i
+on c.customerid=i.CustomerId
+group by 1
+having Title='Sales Support Agent'
+----------------------------------------
+QUERY_2
+
+with t1 as (
+select avg (N) avg_total
+from(select sum(i.total) N
+from customer c
+join invoice i
+on c.customerid=i.CustomerId
+group by c.CustomerId)),
+t2 as(
+select avg (N) avg_10 from
+(select c.CustomerId,sum(i.total) N
+from customer c
+join invoice i
+on c.customerid=i.CustomerId
+group by c.CustomerId
+order by 2 desc  
+limit 10))
+select t1.avg_total,t2.avg_10 
+from t1,t2
+---------------------------------------
+QUERY_3 
+
+SELECT a.name Artist,count (*) Invoices 
+from invoice i
+join InvoiceLine il
+on il.InvoiceId=i.InvoiceId
+join Track t
+on t.TrackId=il.TrackId
+join album al
+on al.AlbumId=t.AlbumId
+join Artist a
+on a.ArtistId=al.ArtistId
+group by a.ArtistId
+order by 2 desc
+limit 5
+---------------------------------------
+QUERY_4
+
+select g.name, count (g.name) Num
+from Invoice i
+join InvoiceLine il
+on il.InvoiceId=i.InvoiceId
+join track t
+on t.trackid=il.TrackId
+join Genre g
+on t.GenreId=g.GenreId
+group by 1
+order by 2 desc
+limit 5
+---------------------------------------
+Another query using case
+QUERY_5
+
+select 
+       CASE WHEN total <= 5 THEN '5 or under'
+            WHEN total > 5 AND total <= 10 THEN '5 - 10'
+            ELSE 'over 10' END AS total_group,
+			count(*) Number_of_Invoices
+from invoice i
+group by 1
+order by 2 desc
